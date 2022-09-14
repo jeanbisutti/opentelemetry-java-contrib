@@ -7,10 +7,15 @@ package io.opentelemetry.contrib.startupprofiler;
 
 import java.lang.instrument.Instrumentation;
 
-public class StartupProfilerAgent {
+public final class StartupProfilerAgent {
 
+  @SuppressWarnings("SystemOut")
   public static void premain(String agentArgs, Instrumentation inst) {
+
+    System.out.println("Start-up profiling begins");
 
   }
 
+  private StartupProfilerAgent() {
+  }
 }
