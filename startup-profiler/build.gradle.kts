@@ -11,7 +11,7 @@ tasks {
   jar {
     manifest {
       attributes(
-        "Premain-Class" to "io.opentelemetry.javaagent.OpenTelemetryAgent",
+        "Premain-Class" to "io.opentelemetry.contrib.startupprofiler.StartupProfilerAgent",
       )
     }
   }
