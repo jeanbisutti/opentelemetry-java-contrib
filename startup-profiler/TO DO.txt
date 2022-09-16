@@ -1,0 +1,6 @@
+* Be able to set up the duration from a property
+* Be able to set up the destination from a property
+* Dump on exit mode without duration
+* Documentation
+* Manage exceptions
+* Create a shadow jar with Microsoft JFR streaming
