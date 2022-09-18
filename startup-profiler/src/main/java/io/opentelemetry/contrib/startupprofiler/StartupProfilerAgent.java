@@ -22,12 +22,19 @@ public final class StartupProfilerAgent {
 
   private static final String PROFILING_DURATION_IN_SECONDS = "-Dotel.startupprofiler.duration-in-seconds";
 
+  private static final String PROFILING_FILE = "-Dotel.startupprofiler.file";
+
   @SuppressWarnings("SystemOut")
   public static void premain(String agentArgs, Instrumentation inst)
       throws InstanceNotFoundException, IOException, JfrStreamingException {
 
     String durationInSeconds = System.getProperty(PROFILING_DURATION_IN_SECONDS);
     if(durationInSeconds == null) {
+      new IllegalStateException("");
+    }
+
+    String profilingFile = System.getProperty(PROFILING_FILE);
+    if(profilingFile == null) {
       new IllegalStateException("");
     }
 
@@ -41,7 +48,7 @@ public final class StartupProfilerAgent {
               .disk("true")
               .duration(durationInSeconds + " s")
               .dumpOnExit("true")
-              .destination("C:\\agent\\startup-profiling.jfr")
+              .destination(profilingFile)
               .build();
       RecordingConfiguration recordingConfiguration = RecordingConfiguration.PROFILE_CONFIGURATION;
 
