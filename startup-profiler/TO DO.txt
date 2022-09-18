@@ -1,5 +1,4 @@
-* Be able to set up the destination from a property
-* Dump on exit mode without duration
+* disk("true") mandatory?
 * Documentation
 * Manage exceptions
 * Create a shadow jar with Microsoft JFR streaming

@@ -20,7 +20,8 @@ import javax.management.MBeanServerConnection;
 
 public final class StartupProfilerAgent {
 
-  private static final String PROFILING_DURATION_IN_SECONDS = "-Dotel.startupprofiler.duration-in-seconds";
+  private static final String PROFILING_DURATION_IN_SECONDS =
+      "-Dotel.startupprofiler.duration-in-seconds";
 
   private static final String PROFILING_FILE = "-Dotel.startupprofiler.file";
 
@@ -29,12 +30,9 @@ public final class StartupProfilerAgent {
       throws InstanceNotFoundException, IOException, JfrStreamingException {
 
     String durationInSeconds = System.getProperty(PROFILING_DURATION_IN_SECONDS);
-    if(durationInSeconds == null) {
-      new IllegalStateException("");
-    }
 
     String profilingFile = System.getProperty(PROFILING_FILE);
-    if(profilingFile == null) {
+    if (profilingFile == null) {
       new IllegalStateException("");
     }
 
@@ -44,18 +42,22 @@ public final class StartupProfilerAgent {
 
     if (flightRecorderConnection != null) {
       RecordingOptions recordingOptions =
-          new RecordingOptions.Builder()
-              .disk("true")
-              .duration(durationInSeconds + " s")
-              .dumpOnExit("true")
-              .destination(profilingFile)
-              .build();
+          buildFrecordingOptionsFrom(durationInSeconds, profilingFile);
       RecordingConfiguration recordingConfiguration = RecordingConfiguration.PROFILE_CONFIGURATION;
-
       Recording recording =
           flightRecorderConnection.newRecording(recordingOptions, recordingConfiguration);
       recording.start();
     }
+  }
+
+  private static RecordingOptions buildFrecordingOptionsFrom(
+      String durationInSeconds, String profilingFile) {
+    RecordingOptions.Builder recordingOptionsBuilder =
+        new RecordingOptions.Builder().disk("true").dumpOnExit("true").destination(profilingFile);
+    if (durationInSeconds != null) {
+      recordingOptionsBuilder = recordingOptionsBuilder.duration(durationInSeconds + " s");
+    }
+    return recordingOptionsBuilder.build();
   }
 
   @Nullable
