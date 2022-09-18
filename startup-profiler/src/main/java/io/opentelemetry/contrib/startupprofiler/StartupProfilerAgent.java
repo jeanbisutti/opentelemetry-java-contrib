@@ -20,9 +20,16 @@ import javax.management.MBeanServerConnection;
 
 public final class StartupProfilerAgent {
 
+  private static final String PROFILING_DURATION_IN_SECONDS = "-Dotel.startupprofiler.duration-in-seconds";
+
   @SuppressWarnings("SystemOut")
   public static void premain(String agentArgs, Instrumentation inst)
       throws InstanceNotFoundException, IOException, JfrStreamingException {
+
+    String durationInSeconds = System.getProperty(PROFILING_DURATION_IN_SECONDS);
+    if(durationInSeconds == null) {
+      new IllegalStateException("");
+    }
 
     System.out.println("Start-up profiling begins");
 
@@ -32,7 +39,7 @@ public final class StartupProfilerAgent {
       RecordingOptions recordingOptions =
           new RecordingOptions.Builder()
               .disk("true")
-              .duration("30 s")
+              .duration(durationInSeconds + " s")
               .dumpOnExit("true")
               .destination("C:\\agent\\startup-profiling.jfr")
               .build();
