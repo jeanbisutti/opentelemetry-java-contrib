@@ -8,6 +8,7 @@ package io.opentelemetry.contrib.staticinstrumenter.plugin.maven;
 import static io.opentelemetry.contrib.staticinstrumenter.plugin.maven.JarSupport.consumeEntries;
 import static io.opentelemetry.contrib.staticinstrumenter.plugin.maven.ZipEntryCreator.moveEntryUpdating;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.FileSystem;
@@ -50,6 +51,27 @@ public class InstrumentationAgent {
         InstrumentationAgent.class.getClassLoader().getResourceAsStream(JAR_FILE_NAME);
     if (agentSource == null) {
       throw new IllegalStateException(
+          "Instrumented"
+              + ""
+              + " OTel agent not found in class path and JAR name: " + JAR_FILE_NAME);
+    }
+    try {
+      Files.copy(agentSource, targetPath, StandardCopyOption.REPLACE_EXISTING);
+    } catch (IOException exception) {
+      logger.error("Couldn't copy agent JAR using class resource: {}.", JAR_FILE_NAME);
+      throw exception;
+    }
+    return new InstrumentationAgent(targetPath.toString());
+  }
+
+  public static InstrumentationAgent createFromVendorAgent(Path vendorAgentFolder)
+      throws IOException {
+
+    Path targetPath = vendorAgentFolder.resolve(JAR_FILE_NAME);
+    InputStream agentSource =
+        InstrumentationAgent.class.getClassLoader().getResourceAsStream(JAR_FILE_NAME);
+    if (agentSource == null) {
+      throw new IllegalStateException(
           "Instrumented OTel agent not found in class path and JAR name: " + JAR_FILE_NAME);
     }
     try {
@@ -59,6 +81,11 @@ public class InstrumentationAgent {
       throw exception;
     }
     return new InstrumentationAgent(targetPath.toString());
+    /*
+    String agentPath = vendorAgentFolder.toString() + File.separator + "opentelemetry-agent.jar";
+    System.out.println("agentPath = " + agentPath);
+    return new InstrumentationAgent(agentPath);
+     */
   }
 
   /**
@@ -71,8 +98,13 @@ public class InstrumentationAgent {
    * @return ProcessBuilder for instrumentation process
    */
   public ProcessBuilder getInstrumentationProcess(String classpath, Path outputFolder) {
+    String jfrOption =
+        "-XX:StartFlightRecording,disk=false,dumponexit=true,duration=3m,settings=profile,filename=C:\\agent\\instrumented\\ai\\instrumented-artifact\\profiling.jfr";
+    System.out.println("jfrOption = " + jfrOption);
+
     return new ProcessBuilder(
         "java",
+        jfrOption,
         "-Dotel.instrumentation.internal-class-loader.enabled=false",
         String.format("-javaagent:%s", agentPath),
         "-cp",

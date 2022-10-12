@@ -22,6 +22,8 @@ public class Instrumenter {
   private final InstrumentationAgent agent;
   private final Path targetFolder;
 
+  private Path instrumentationWorkingFolder;
+
   public Instrumenter(InstrumentationAgent agent, Path targetFolder) {
     this.agent = agent;
     this.targetFolder = targetFolder;
@@ -34,10 +36,13 @@ public class Instrumenter {
   }
 
   private void runInstrumentationProcess(List<Path> artifactsToInstrument) throws IOException {
+    System.out.println("artifactsToInstrument = " + artifactsToInstrument);
+
+    String classpath = toClasspath(artifactsToInstrument);
+    System.out.println("classpath = " + classpath);
+
     ProcessBuilder processBuilder =
-        agent
-            .getInstrumentationProcess(toClasspath(artifactsToInstrument), targetFolder)
-            .redirectErrorStream(true);
+        agent.getInstrumentationProcess(classpath, targetFolder).inheritIO();
     log.debug("Instrumentation process: {}", processBuilder.command());
     Process process = processBuilder.start();
 

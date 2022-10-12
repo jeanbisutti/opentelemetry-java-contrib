@@ -27,7 +27,7 @@ class Unpacker {
 
   /**
    * Copies the artifact to the target folder, removing class prefix using packagingSupport. If
-   * there are any nested JAR files, they will be extracted into the target folder.
+   * there are any nested JAR files, they will be extracted into the target folder. // New behavior
    *
    * @param artifact artifact to be copied and unpacked
    * @param packagingSupport relevant packaging support service

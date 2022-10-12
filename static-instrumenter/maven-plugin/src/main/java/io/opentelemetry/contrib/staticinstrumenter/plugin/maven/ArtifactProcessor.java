@@ -36,6 +36,23 @@ class ArtifactProcessor {
     return new ArtifactProcessor(unpacker, instrumenter, agent, packer);
   }
 
+  static ArtifactProcessor createVendorProcessor(
+      Path instrumentationFolder,
+      Path preparationFolder,
+      Path vendorAgentFolder,
+      Path finalFolder,
+      String finalNameSuffix
+      // Add vendor agent name ?
+      ) throws IOException {
+    Unpacker unpacker = new Unpacker(preparationFolder);
+    // InstrumentationAgent agent =
+    // InstrumentationAgent.createFromClasspathAgent(vendorAgentFolder);
+    InstrumentationAgent agent = InstrumentationAgent.createFromVendorAgent(vendorAgentFolder);
+    Instrumenter instrumenter = new Instrumenter(agent, instrumentationFolder);
+    Packer packer = new Packer(finalFolder, finalNameSuffix);
+    return new ArtifactProcessor(unpacker, instrumenter, agent, packer);
+  }
+
   ArtifactProcessor(
       Unpacker unpacker, Instrumenter instrumenter, InstrumentationAgent agent, Packer packer) {
     this.agent = agent;
@@ -58,10 +75,11 @@ class ArtifactProcessor {
     PackagingSupport packagingSupport = packagingSupportFor(artifact);
     List<Path> artifactsToInstrument = unpacker.copyAndExtract(artifact, packagingSupport);
     log.info("Unpacked artifacts: {}", artifactsToInstrument);
+
     Path instrumentedArtifact =
         instrumenter.instrument(artifact.getFileName(), artifactsToInstrument);
     log.info("Main artifact after instrumentation: {}", instrumentedArtifact);
-    agent.copyAgentClassesTo(instrumentedArtifact, packagingSupport);
+    agent.copyAgentClassesTo(instrumentedArtifact, packagingSupport); // Caused by: java.nio.file.FileAlreadyExistsException: /BOOT-INF/classes/META-INF/MANIFEST.MF
     Path finalArtifact = packer.packAndCopy(instrumentedArtifact, packagingSupport);
     log.info("Final artifact: {}", finalArtifact);
   }

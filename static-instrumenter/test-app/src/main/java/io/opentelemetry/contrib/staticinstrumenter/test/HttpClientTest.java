@@ -19,6 +19,8 @@ public final class HttpClientTest {
   private HttpClientTest() {}
 
   public static void main(String[] args) throws Exception {
+    String classPath = System.getProperty("java.class.path");
+    System.out.println("classPath from SPring main= " + classPath);
     System.setProperty("otel.traces.exporter", "logging");
     makeCall();
   }

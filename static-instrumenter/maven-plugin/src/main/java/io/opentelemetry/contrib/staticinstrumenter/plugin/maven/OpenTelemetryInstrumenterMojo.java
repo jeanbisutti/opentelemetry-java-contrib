@@ -8,6 +8,7 @@ package io.opentelemetry.contrib.staticinstrumenter.plugin.maven;
 import com.google.common.annotations.VisibleForTesting;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.apache.maven.plugin.AbstractMojo;
@@ -42,6 +43,11 @@ public class OpenTelemetryInstrumenterMojo extends AbstractMojo {
   @Parameter(readonly = true, defaultValue = "-instrumented")
   @Nullable
   private String suffix;
+
+  @Parameter(readonly = true)
+  @Nullable
+  //private String vendorAgentPath; // be possible to reuse it for OTel agent (in target?)
+ String vendorAgentPath;
 
   private final Logger logger = LoggerFactory.getLogger(OpenTelemetryInstrumenterMojo.class);
 
@@ -79,16 +85,30 @@ public class OpenTelemetryInstrumenterMojo extends AbstractMojo {
     WorkingFolders workingFolders = null;
     try {
       workingFolders = new WorkingFolders(finalFolder);
-      ArtifactProcessor artifactProcessor = createProcessor(workingFolders, finalNameSuffix);
+
+      ArtifactProcessor artifactProcessor = null;
+      if (vendorAgentPath != null) {
+        System.out.println("vendorAgentPath not null");
+        artifactProcessor =
+            ArtifactProcessor.createVendorProcessor(
+                workingFolders.instrumentationFolder(),
+                workingFolders.getPreparationFolder(),
+                Paths.get(vendorAgentPath),
+                workingFolders.finalFolder(),
+                finalNameSuffix);
+      } else {
+        artifactProcessor = createProcessor(workingFolders, finalNameSuffix);
+      }
+
       for (Path artifact : artifactsToInstrument) {
         logger.info("Processing artifact: {}", artifact);
         artifactProcessor.process(artifact);
-        workingFolders.cleanWorkingFolders();
+        //workingFolders.cleanWorkingFolders();
       }
     } finally {
       try {
         if (workingFolders != null) {
-          workingFolders.delete();
+          //workingFolders.delete();
         }
       } catch (Exception e) {
         // ignored

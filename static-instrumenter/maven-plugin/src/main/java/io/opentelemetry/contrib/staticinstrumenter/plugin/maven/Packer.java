@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.jar.JarFile;
+import java.util.zip.Deflater;
 import java.util.zip.ZipOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +55,7 @@ class Packer {
 
     try (JarFile sourceJar = new JarFile(mainArtifact.toFile());
         ZipOutputStream targetOut = new ZipOutputStream(Files.newOutputStream(targetFile))) {
+    //targetOut.setLevel(Deflater.NO_COMPRESSION);
       consumeEntries(
           sourceJar,
           (entry) -> {

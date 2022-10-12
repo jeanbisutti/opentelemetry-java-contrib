@@ -36,9 +36,9 @@ class WorkingFolders {
   }
 
   void delete() throws IOException {
-    FileUtils.deleteDirectory(agentFolder.toFile());
-    FileUtils.deleteDirectory(preparationFolder.toFile());
-    FileUtils.deleteDirectory(instrumentationFolder.toFile());
+    //FileUtils.deleteDirectory(agentFolder.toFile());
+    //FileUtils.deleteDirectory(preparationFolder.toFile());
+    //FileUtils.deleteDirectory(instrumentationFolder.toFile());
   }
 
   Path agentFolder() {

@@ -57,6 +57,13 @@
           <editable>false</editable>
           <description></description>
         </parameter>
+        <parameter>
+          <name>vendorAgentPath</name>
+          <type>java.lang.String</type>
+          <required>false</required>
+          <editable>false</editable>
+          <description></description>
+        </parameter>
       </parameters>
       <configuration>
         <project implementation="org.apache.maven.project.MavenProject" default-value="${project}"/>

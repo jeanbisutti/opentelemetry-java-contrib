@@ -7,6 +7,7 @@ package io.opentelemetry.contrib.staticinstrumenter.agent.main;
 
 import io.opentelemetry.contrib.staticinstrumenter.util.SystemLogger;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -73,8 +74,28 @@ class ClassArchive {
     if (entry.shouldInstrument()) {
       String className = entry.getName();
       try {
-        ClassLoader loader = new URLClassLoader(new URL[0]);
-        loader.loadClass(className);
+        //System.out.println("className = " + className);
+       ClassLoader loader = new URLClassLoader(new URL[0]); // Use spring boot class loader
+
+       try {
+        loader.loadClass(className); // java.lang.NoClassDefFoundError: org/springframework/data/repository/Repository
+        //ClassLoader classLoader = this.getClass().getClassLoader();
+        //classLoader.loadClass(className);
+
+
+         } catch(NoClassDefFoundError noClassDefFoundError) {
+
+         String exceptionMessage = noClassDefFoundError.getMessage();
+         //System.out.println("exceptionMessage = " + exceptionMessage);
+         System.out.println("try to reload imported class");
+         String importedClassToLoad = exceptionMessage.replace("/", ".");
+         System.out.println("importedClassToLoad = " + importedClassToLoad);
+         loader.loadClass(importedClassToLoad);
+         System.out.println("Reloading of imported class succeeded");
+         loader.loadClass(className);
+         System.out.println("Reloading succeeded");
+         throw noClassDefFoundError;
+       }
 
         byte[] modified = instrumentedClasses.get(entry.getPath());
         if (modified != null) {

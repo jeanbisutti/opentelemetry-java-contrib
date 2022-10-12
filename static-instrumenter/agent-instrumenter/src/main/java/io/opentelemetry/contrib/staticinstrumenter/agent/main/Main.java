@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.instrument.ClassFileTransformer;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.JarFile;
@@ -41,6 +42,8 @@ public class Main {
 
     String classPath = System.getProperty("java.class.path");
     logger.debug("Classpath (jars list): {}", classPath);
+    System.out.println("classPath = " + classPath);
+
     String[] jarsList = classPath.split(File.pathSeparator);
 
     getInstance().saveTransformedJarsTo(jarsList, outDir);
@@ -86,7 +89,9 @@ public class Main {
   public void saveTransformedJarsTo(String[] jarsList, File outDir) throws IOException {
 
     for (String pathItem : jarsList) {
-      logger.info("Classpath item processed: " + pathItem);
+      String message = "Classpath item processed: " + pathItem;
+      System.out.println("message = " + message);
+      logger.info(message);
       if (isArchive(pathItem)) {
         saveArchiveTo(new File(pathItem), outDir);
       }
@@ -102,17 +107,41 @@ public class Main {
   // FIXME: multiple jars with same name
   private void saveArchiveTo(File inFile, File outDir) throws IOException {
 
+    String subFolderPath = extractSubfolderPath(inFile.toString());
+
+    File outDirUntilSubDir = new File(outDir.toString() + subFolderPath);
+    if(!outDirUntilSubDir.exists()) {
+      outDirUntilSubDir.mkdirs();
+    }
     try (JarFile inJar = new JarFile(inFile);
-        JarOutputStream outJar = jarOutputStreamFor(outDir, inFile.getName())) {
+        JarOutputStream outJar = jarOutputStreamFor(outDirUntilSubDir, inFile.getName())) {
       ClassArchive inClassArchive = classArchiveFactory.createFor(inJar, instrumentedClasses);
       inClassArchive.copyAllClassesTo(outJar);
       injectAdditionalClassesTo(outJar);
     }
   }
 
+  private static String extractSubfolderPath(String inFile) {
+    String result = "";
+    String[] elements = inFile.split("PREPARATION_FOLDER")[1].split("\\\\");
+    System.out.println("elements = " + Arrays.asList(elements));
+    for(int i = 1; i < (elements.length -1); i++) {
+      result = result + elements[i] + File.separator;
+    }
+    if(!result.isEmpty()) {
+      result = File.separator + result;
+    }
+    return result;
+  }
+
+
   private static JarOutputStream jarOutputStreamFor(File outDir, String fileName)
       throws IOException {
     File outFile = new File(outDir, fileName);
+    String outFileAsString = outFile.toString();
+    System.out.println("outFileAsString = " + outFileAsString);
+
+
     return new JarOutputStream(new FileOutputStream(outFile));
   }
 
