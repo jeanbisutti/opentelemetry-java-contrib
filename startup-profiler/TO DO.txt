@@ -2,3 +2,5 @@
 * Documentation
 * Manage exceptions
 * Create a shadow jar with Microsoft JFR streaming
+  * Done
+  * To test
