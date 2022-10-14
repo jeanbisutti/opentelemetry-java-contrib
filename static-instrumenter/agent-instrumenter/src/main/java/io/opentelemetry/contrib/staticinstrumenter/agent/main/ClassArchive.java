@@ -75,13 +75,10 @@ class ClassArchive {
       String className = entry.getName();
       try {
         //System.out.println("className = " + className);
-       ClassLoader loader = new URLClassLoader(new URL[0]); // Use spring boot class loader
+       ClassLoader loader = new URLClassLoader(new URL[0]);
 
        try {
-        loader.loadClass(className); // java.lang.NoClassDefFoundError: org/springframework/data/repository/Repository
-        //ClassLoader classLoader = this.getClass().getClassLoader();
-        //classLoader.loadClass(className);
-
+        loader.loadClass(className); // Why it's necessary to reload the ppppclass?
 
          } catch(NoClassDefFoundError noClassDefFoundError) {
 
