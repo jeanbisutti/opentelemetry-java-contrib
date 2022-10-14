@@ -30,6 +30,7 @@ class OpenTelemetryInstrumenterMojoTest extends AbstractTempDirTest {
     String pathOfSourceFile = "C:\\agent\\instrumented\\ai\\source\\spring-petclinic-2.7.0-SNAPSHOT.jar";
     Path testApp = Path.of(pathOfSourceFile);
     mojo.vendorAgentPath = "C:\\agent\\instrumented\\ai\\agent";
+    mojo.vendorAgentMainClass = "com.microsoft.applicationinsights.agent.Agent";
 
     // when
     try {

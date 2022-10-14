@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.security.CodeSource;
@@ -25,11 +26,28 @@ public final class OpenTelemetryStaticAgent {
 
   public static void premain(String agentArgs, Instrumentation inst) {
     try {
+      System.out.println("OpenTelemetryStaticAgent premain");
       installBootstrapJar(inst);
       beforeAgent(inst);
+     /*
+      String otelProviderAgentClassName = System.getProperty("otel.provider.agent.class");
+      if(otelProviderAgentClassName != null) {
+        Class<?> otelProviderAgentClass = Class.forName(otelProviderAgentClassName);
+        Method premainMethod = otelProviderAgentClass.getMethod("premain", String.class,
+            Instrumentation.class);
+        premainMethod.invoke(null, agentArgs, inst);
+      } else {
+      }*/
       OpenTelemetryAgent.premain(agentArgs, inst);
       afterAgent(inst);
     } catch (Throwable ex) {
+      Class<? extends Throwable> exceptionClass = ex.getClass();
+      System.out.println("exceptionClass = " + exceptionClass);
+      Throwable cause = ex.getCause();
+      System.out.println("cause = " + cause);
+      String message = ex.getMessage();
+      System.out.println("message = " + message);
+      ex.fillInStackTrace();
       getLogger().error("Instrumentation failed", ex);
     }
   }

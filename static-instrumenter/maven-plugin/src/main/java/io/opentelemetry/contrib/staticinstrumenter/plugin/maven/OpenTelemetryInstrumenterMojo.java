@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
     requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME,
     requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class OpenTelemetryInstrumenterMojo extends AbstractMojo {
-
   @Parameter(defaultValue = "${project}", required = true, readonly = true)
   @Nullable
   private MavenProject project;
@@ -48,6 +47,8 @@ public class OpenTelemetryInstrumenterMojo extends AbstractMojo {
   @Nullable
   //private String vendorAgentPath; // be possible to reuse it for OTel agent (in target?)
  String vendorAgentPath;
+
+  public String vendorAgentMainClass;
 
   private final Logger logger = LoggerFactory.getLogger(OpenTelemetryInstrumenterMojo.class);
 
