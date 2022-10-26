@@ -24,6 +24,10 @@ import java.util.Map;
  *     Additional class: io/opentelemetry/javaagent/instrumentation/internal/lambda/LambdaTransformer.class
  *     Additional class: io/opentelemetry/javaagent/instrumentation/internal/lambda/Java9LambdaTransformer.class
  *     Additional class: io/opentelemetry/javaagent/instrumentation/internal/reflection/ReflectionHelper.class
+ *
+ *    Some virtual fields are not in the bootstrap class loader but int the agent class loader?
+ *      java.lang.ClassNotFoundException: io/opentelemetry/javaagent/bootstrap/field/VirtualFieldImpl$java$sql$Connection$io$opentelemetry$javaagent$bootstrap$jdbc$DbInfo
+ *
  */
 public class AdditionalClassesInjectorListener implements HelperInjectorListener {
 
